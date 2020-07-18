@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = https://sanjose202005@github.com/sanjose202005/009.caddy.y.git
+	fetch = +refs/heads/*:refs/remotes/origin/*

@@ -6,6 +6,12 @@ CFGmakeRun:=Makefile.run.go01.mk
 
 GoTOP:=\
 	test01
+
+X:=commit_all
+$(X):=ga gcX up
+X $(X): $($(X))
+
+
     
 n05:=clone_and_build_naiverproxy
 n05 $(n05):
@@ -33,6 +39,6 @@ n05 $(n05):
 
 
 
-showRunHelpListLast += n05 
+showRunHelpListLast += n05 X
 
 .PHONY : x1 x2 c1 conf
