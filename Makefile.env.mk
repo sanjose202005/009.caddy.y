@@ -15,11 +15,23 @@ X $(X): $($(X))
     
 n05:=clone_and_build_naiverproxy
 n05 $(n05):
+	nice -n 19 make n05X
+
+target_cpu:=arm
+export target_cpu
+
+n05X:
 	[ -d naiveProxy/ ] || git clone           --depth 1 https://github.com/klzgrad/naiveproxy.git    naiveProxy/ 
 	[ -d naiveProxy/ ]
+	[ ! -f naiveProxy.arm.conf/src/build.sh ] || \
+		cp naiveProxy.arm.conf/src/build.sh \
+		            naiveProxy/src/build.sh \
+		   
 	rm -f      naiveProxy/src/out/Release/naive*
-	cd naiveProxy/src && ./get-clang.sh
-	cd naiveProxy/src && ./build.sh
+	#cd naiveProxy/src && ( export target_cpu=arm ; ./get-clang.sh )
+	#cd naiveProxy/src && ( export target_cpu=arm ; ./build.sh     )
+	cd naiveProxy/src && ./get-clang.sh 
+	cd naiveProxy/src && ./build.sh     
 	llvm-strip -o \
 		naiveProxy/src/out/Release/naive.build.strip.bin \
 		naiveProxy/src/out/Release/naive      
