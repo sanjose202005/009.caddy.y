@@ -11,6 +11,8 @@ X:=commit_all
 $(X):=ga gcX up
 X $(X): $($(X))
 
+gclient:=$(PWD)/depot_tools/gclient
+fetch:=$(PWD)/depot_tools/fetch
 
     
 n05:=clone_and_build_naiverproxy
@@ -25,13 +27,22 @@ n05X:
 	[ -d naiveProxy/ ]
 	[ ! -f naiveProxy.arm.conf/src/build.sh ] || \
 		cp naiveProxy.arm.conf/src/build.sh \
-		            naiveProxy/src/build.sh \
-		   
+		            naiveProxy/src/build.sh 
+	[ ! -f naiveProxy.arm.conf/.gclient  ] || \
+		cp naiveProxy.arm.conf/.gclient  \
+		            naiveProxy/.gclient  
 	rm -f      naiveProxy/src/out/Release/naive*
-	#cd naiveProxy/src && ( export target_cpu=arm ; ./get-clang.sh )
+	#
+	cd naiveProxy/src && ( export target_cpu=arm ; ./get-clang.sh )
 	#cd naiveProxy/src && ( export target_cpu=arm ; ./build.sh     )
-	cd naiveProxy/src && ./get-clang.sh 
-	cd naiveProxy/src && ./build.sh     
+	#cd naiveProxy/src && ./get-clang.sh 
+	#
+	#cd naiveProxy/src && echo "target_os = [ 'android' ]" > ../.gclient
+	cd naiveProxy/src && $(gclient) sync
+	#cd naiveProxy/src && ./build.sh     
+	#cd naiveProxy/src && ( export target_cpu=arm ;export EXTRA_FLAGS='target_cpu="arm"' ; ./build.sh     )
+	cd naiveProxy/src && ( export target_cpu=arm ; export EXTRA_FLAGS=$$'\ntarget_os="android"\ntarget_cpu="arm64"' ; ./build.sh     )
+	#
 	llvm-strip -o \
 		naiveProxy/src/out/Release/naive.build.strip.bin \
 		naiveProxy/src/out/Release/naive      
@@ -49,8 +60,19 @@ n05X:
 #https://github.com/klzgrad/naiveproxy/releases/download/v83.0.4103.61-1/naiveproxy-v83.0.4103.61-1-linux-x64.tar.xz
 
 
+n06 $(n06):
+	nice -n 19 make n06x
+n06x:
+	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
+n07 $(n07):
+	nice -n 19 make n07x
+n07x:
+	[ -d chromium ] || mkdir chromium 
+	cd   chromium && $(fetch) --nohooks android
 
 
-showRunHelpListLast += n05 X
+
+showRunHelpListLast += n06 n07 n05 X
 
 .PHONY : x1 x2 c1 conf
