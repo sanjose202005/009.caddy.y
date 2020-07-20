@@ -8,3 +8,4 @@ solutions = [
   },
 ]
 target_os = ["android"]
+target_cpu = ["arm"]

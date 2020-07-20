@@ -19,29 +19,32 @@ n05:=clone_and_build_naiverproxy
 n05 $(n05):
 	nice -n 19 make n05X
 
-target_cpu:=arm
+target_cpu:=arm64
 export target_cpu
 
 n05X:
 	[ -d naiveProxy/ ] || git clone           --depth 1 https://github.com/klzgrad/naiveproxy.git    naiveProxy/ 
 	[ -d naiveProxy/ ]
-	[ ! -f naiveProxy.arm.conf/src/build.sh ] || \
-		cp naiveProxy.arm.conf/src/build.sh \
-		            naiveProxy/src/build.sh 
-	[ ! -f naiveProxy.arm.conf/.gclient  ] || \
-		cp naiveProxy.arm.conf/.gclient  \
-		            naiveProxy/.gclient  
+	for aa1 in src/build.sh .gclient .gclient_entries ; do \
+		test -f naiveProxy.arm.conf/$${aa1} && \
+		echo cp naiveProxy.arm.conf/$${aa1} naiveProxy/$${aa1} ; \
+		cp      naiveProxy.arm.conf/$${aa1} naiveProxy/$${aa1} ; \
+		done ; echo -n
 	rm -f      naiveProxy/src/out/Release/naive*
 	#
-	cd naiveProxy/src && ( export target_cpu=arm ; ./get-clang.sh )
-	#cd naiveProxy/src && ( export target_cpu=arm ; ./build.sh     )
+	cd naiveProxy/src && ( export target_cpu=$(target_cpu) ; ./get-clang.sh )
+	#cd naiveProxy/src && ( export target_cpu=$(target_cpu) ; ./build.sh     )
 	#cd naiveProxy/src && ./get-clang.sh 
 	#
 	#cd naiveProxy/src && echo "target_os = [ 'android' ]" > ../.gclient
-	cd naiveProxy/src && $(gclient) sync
+	#cd naiveProxy/src && $(gclient) sync
+	#
 	#cd naiveProxy/src && ./build.sh     
-	#cd naiveProxy/src && ( export target_cpu=arm ;export EXTRA_FLAGS='target_cpu="arm"' ; ./build.sh     )
-	cd naiveProxy/src && ( export target_cpu=arm ; export EXTRA_FLAGS=$$'\ntarget_os="android"\ntarget_cpu="arm64"' ; ./build.sh     )
+	#cd naiveProxy/src && ( export target_cpu=$(target_cpu) ;export EXTRA_FLAGS='target_cpu="$(target_cpu)"' ; ./build.sh     )
+	cd naiveProxy/src && ( \
+		export target_cpu=$(target_cpu) ; \
+		export EXTRA_FLAGS=$$'\ntarget_os="android"\ntarget_cpu="$(target_cpu)"' \
+		; ./build.sh     )
 	#
 	llvm-strip -o \
 		naiveProxy/src/out/Release/naive.build.strip.bin \
