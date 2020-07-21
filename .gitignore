@@ -23,3 +23,6 @@ date.now.txt
 /chromium/
 /naiveProxy.git.clone.001/
 /naiveProxy.sync__ed/
+/lnx/*.o
+/lnx/bin.*
+/lnx/*.bin

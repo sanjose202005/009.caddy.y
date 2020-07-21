@@ -42,6 +42,13 @@ export export ANDROID_TOOLCHAIN:=$(toolchain105)
 
 export PATH:=$(PATH):$(ANDROID_NDK_ROOT):$(ANDROID_SDK_ROOT)/tools:$(ANDROID_SDK_ROOT)/platform-tools
 
+toolchain201:=$(shell ls  -d $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/linux-x86_64/bin|head -n 1)
+toolchain203:=$(shell realpath  $(toolchain201))
+
+armStrip:=$(toolchain203)/arm-linux-androideabi-strip
+armLd:=$(toolchain203)/arm-linux-androideabi-ld
+armClang:=$(toolchain203)/armv7a-linux-androideabi16-clang
+armClangPP:=$(toolchain203)/armv7a-linux-androideabi16-clang++
 
 
 n05X:
@@ -96,6 +103,21 @@ n07x:
 	[ -d chromium ] || mkdir chromium 
 	cd   chromium && $(fetch) --nohooks android
 
+c01:
+	@echo
+	$(armClang) -O2 -c \
+		src2/print.c       \
+		-o lnx/print.o
+	$(armClang) -O2 -static -flto -ffunction-sections -Wl,--gc-sections \
+		src2/main.c   \
+		lnx/print.o \
+		-o lnx/bin.arm7.print.test.bin
+	$(armStrip) \
+		lnx/bin.arm7.print.test.bin \
+		-o lnx/bin.arm7.print.test.bin.strip
+	@echo
+	@ls -l lnx/bin.arm7.print.test.bin*
+	@echo
 
 
 showRunHelpListLast += n06 n07 n05 X

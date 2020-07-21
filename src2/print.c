@@ -1,4 +1,7 @@
 #include <stdio.h>
-void print (){
+void myprint1 (){
+    printf( "\n\nprint print\n\n" );
+}
+void myprint2 (){
     printf( "\n\nprint print\n\n" );
 }
